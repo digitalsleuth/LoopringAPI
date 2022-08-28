@@ -6,7 +6,7 @@ from .util import auto_repr, to_snake_case
 
 class CounterFactualInfo:
     """...
-    
+
     .. warning:: This isn't yet implemented
 
     """
@@ -17,43 +17,43 @@ class CounterFactualInfo:
 
     def __init__(self):
         pass
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
 
 class Validity:
     """A class representative of an order's validity.
-    
+
     Attributes:
         end (:class:`~datetime.datetime`): ...
         start (:class:`~datetime.datetime`): ...
-    
+
     """
-    
+
     end: datetime
     start: datetime
 
     def __init__(self, **data) -> None:
         for k in data:
             setattr(self, k, datetime.fromtimestamp(data[k]))
-    
+
     def __repr__(self) -> None:
         return f"<end='{self.end}' start='{self.start}'>"
 
 
 class Volume:
     """A class wrapping data regarding an order's volume.
-    
+
     Attributes:
         base_amount (str): ...
         base_filled (str): ...
         fee (str): ...
         quote_amount (str): ...
         quote_filled (str): ...
-    
+
     """
-    
+
     base_amount: str
     base_filled: str
     fee: str
@@ -77,23 +77,23 @@ class Transfer:
     def __init__(self, **data) -> None:
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.hash
 
 
 class PartialOrder(Transfer):
     """A partial order object, usually returned when making a new order.
-    
+
     Attributes:
         client_order_id (str): ...
         hash (str): ...
         is_idempotent (bool): ...
         status (str): ...
-    
+
     """
 
     client_order_id: str
@@ -113,26 +113,26 @@ class PartialOrder(Transfer):
 
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         if self._is_error():
             return "<Incomplete PartialOrder>"
-    
+
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         if self._is_error():
             return f"Incomplete {self.__class__.__name__}."
-        
+
         return self.hash
-    
+
     def _is_error(self, init: dict=None) -> bool:
         # On an unsuccessful response, the only data in
         # the dictionary would be "resultInfo" along
         # with an error code.
         if not init:
             return not hasattr(self, "hash")
-        
+
         return len(self.__json) < 2
 
     @property
@@ -145,7 +145,7 @@ class PartialOrder(Transfer):
         :obj:`~loopring.order.Order` object returned, but in the event that
         an exception occurs, you'll receive a :py:class:`dict` containing
         the raw error response data.
-        
+
         .. seealso:: :class:`~loopring.util.mappings.Mappings.ERROR_MAPPINGS`
             in case you have disabled :obj:`~loopring.client.Client.handle_errors`
             and wish to handle the raw error JSON response yourself.
@@ -202,13 +202,13 @@ class Order(PartialOrder):
         for k in data:
             if k == "validity":
                 setattr(self, k, Validity(**data[k]))
-            
+
             elif k == "volumes":
                 setattr(self, k, Volume(**data[k]))
 
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         if self._is_error():
             return f"<Incomplete Order>"
@@ -217,7 +217,7 @@ class Order(PartialOrder):
 
 
 class _OrderBookOrder:
-    
+
     price: str
     quantity: int
     size: int
@@ -228,10 +228,10 @@ class _OrderBookOrder:
         self.quantity = int(quantity)
         self.size = int(size)
         self.volume = int(volume)
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return f"{self.quantity} {self.__class__.__name__.lower()}" + \
             f"{'s' if self.quantity != 1 else ' '} @ {self.price} " + \
@@ -268,16 +268,16 @@ class OrderBook:
 
                 for b in data[k]:
                     bids.append(Bid(*b))
-                
+
                 setattr(self, to_snake_case(k), bids)
             elif k == "timestamp":
                 setattr(self, k, datetime.fromtimestamp(data[k] / 1000))
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __len__(self) -> int:
         return sum(_.quantity for _ in [*self.asks, *self.bids])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 

@@ -57,7 +57,7 @@ else:
     from typing import Literal
 
     _BLOCK_TYPEHINT = Union[int, Literal["finalized", "confirmed"]]
-    _CURRENCIES = Literal["CNY", "EUR", "GBP", "HKD", "JPY", "USD"]
+    _CURRENCIES = Literal["CNY", "EUR", "GBP", "HKD", "JPY", "USD", "CAD"]
     _INTERVALS_TYPEHINT = Literal[
         "1min", "5min", "15min", "30min", "1hr", "2hr", "4hr", "12hr", "1d", "1w"
     ]
@@ -73,7 +73,7 @@ class _PoolDict(Dict):
 
 
 class _TokenDict(Dict):
-    
+
     __symbol_mapping: Dict[str, int] = {}
 
     def __getitem__(self, __k: Union[int, str]) -> TokenConfig:
@@ -183,7 +183,7 @@ class Client:
             **config
         ):
         """Initialise the Loopring client.
-        
+
         The final step of the client's initialisation is fetching all
         configurations from the API concurrently (pools, tokens, markets)
         and loading them into local storage.  This is done to allow fast
@@ -198,30 +198,30 @@ class Client:
         """
         self.__exchange_domain_initialised = False
         self.__handle_errors = handle_errors
-        
+
         cfg = config.get("config", {})
-        
+
         if not (cfg.get("accountId") or account_id):
             raise InvalidArguments("Missing account ID from config.")
-        
+
         if not (cfg.get("address") or address):
             raise InvalidArguments("Missing address from config.")
-        
+
         if not (cfg.get("apiKey") or api_key):
             raise InvalidArguments("Missing API Key from config.")
-        
+
         if not (cfg.get("endpoint") or endpoint):
             raise InvalidArguments("Missing endpoint from config.")
-        
+
         if not (cfg.get("nonce") or endpoint):
             raise InvalidArguments("Missing nonce from config.")
-        
+
         if not (cfg.get("privateKey") or private_key):
             raise InvalidArguments("Missing Private Key from config.")
 
         if not (cfg.get("publicX") or publicX):
             raise InvalidArguments("Missing publicX from config.")
-        
+
         if not (cfg.get("publicY") or publicY):
             raise InvalidArguments("Missing publicY from config.")
 
@@ -286,7 +286,7 @@ class Client:
 
         Returns:
             An object containing information about the cancelled order.
-        
+
         Raises:
             EmptyAPIKey: No API Key was provided in the request header.
             InvalidAccountID: An invalid account ID was supplied.
@@ -371,7 +371,7 @@ class Client:
                 exit_tokens = ExitPoolTokens.from_tokens(LRC, ETH, LP)
 
                 await client.exit_amm_pool(exit_tokens, )
-        
+
         Args:
             exit_tokens: The exit tokens with which to exit.  Bear in mind that the \
                 order of the `unpooled` tokens does matter.
@@ -384,10 +384,10 @@ class Client:
                 the future.  See \
                 `here <https://docs.loopring.io/en/basics/orders.html#timestamps>`_ \
                 for more info.
-        
+
         Returns:
             A transfer record containing information about the AMM exit event.
-        
+
         Raise:
             InconsistentTokens: Transfer token is inconsistent with the fee token.
             InvalidArguments: Invalid arguments supplied.
@@ -398,7 +398,7 @@ class Client:
             UnknownError: Something out of your control went wrong.
             UnsupportedFeeToken: Provided fee token is unsupported.  See \
                 :meth:`~loopring.client.Client.get_token_configurations()`.
-            
+
         """
 
         url = self.endpoint + PATH.AMM_EXIT
@@ -424,7 +424,7 @@ class Client:
         )
 
         message = generate_amm_pool_exit_EIP712_hash(request.payload)
-        
+
         helper = MessageEDDSASign(private_key=self.private_key)
         eddsa_signature = helper.sign(message)
 
@@ -439,21 +439,21 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             transfer = Transfer(**content)
             return transfer
 
     async def get_account_info(self, address: str=None) -> Account:
         """Returns data associated with the user's exchange account.
-        
+
         Args:
             address: The ethereum address belonging to the account of which you \
                 want information from.  Note that ENSes are not supported.  Leave \
                 this parameter blank and it will default to your own address.
-        
+
         Returns:
             An account containing all publicly available information.
-        
+
         Raises:
             AddressNotFound: The ethereum address wasn't found.
             UnknownError: Something out of of your control went wrong.
@@ -474,7 +474,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             account = Account(**content)
 
             return account
@@ -546,15 +546,15 @@ class Client:
 
         Combining `limit` and `offset` together can be useful for implementing
         pagination.
-        
+
         Args:
             amm_pool: The pool whose trade history you want to query.
             limit: The number of trade records to be returned.
             offset: Apply an offset when searching through the trade records.
-        
+
         Returns:
             A list of trades, capped to a length of `limit`.
-        
+
         Raises:
             EmptyAPIKey: No API Key has been supplied.
             EmptyUser: No User ID has been supplied.
@@ -579,12 +579,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             trades = []
 
             for t in content["trades"]:
                 trades.append(AMMTrade(**t))
-            
+
             return trades
 
     async def get_amm_pool_snapshot(self, pool: Union[str, Pool]) -> PoolSnapshot:
@@ -592,7 +592,7 @@ class Client:
 
         The snapshot contains information such as the pool's address, liquidity
         pool token (ID and Volume), name, pooled tokens, and a risk factor.
-        
+
         Note:
             As of now, it's not entirely known what ``risky`` means.  Please make a
             PR or raise an issue if you're able to give some insight into it.
@@ -603,7 +603,7 @@ class Client:
 
                 amm_pool = client.pools["amm-lrc-usdc"]
                 snapshot = await client.get_amm_pool_snapshot(amm_pool)
-                
+
                 # Get the LP token's config information from the cache
                 lp_cfg = client.tokens[snapshot.lp.id]
 
@@ -614,16 +614,16 @@ class Client:
 
                 # Display it in a readable format
                 print(f"{vol:,}")  # '1,108,177.277'
-        
+
         Args:
             pool: The pool, or pool's address, whose balance you want to query.
-        
+
         Returns:
             A pool snapshot containing LP token information and general pool data.
-        
+
         Raises:
             UnknownError: Something out of your control went wrong.
-        
+
         """
 
         url = self.endpoint + PATH.AMM_BALANCE
@@ -642,7 +642,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             ps = PoolSnapshot(**content)
 
             return ps
@@ -709,18 +709,18 @@ class Client:
             The ``tx_hash`` property occasionally won't be present when looking for
             a '`confirmed`' block.  If a '`confirmed`' block isn't found, an
             ``InvalidBlock`` error will be raised.
-        
+
         Args:
             id_or_status: Any of the following values are accepted; '`finalized`', \
                 '`confirmed`', '`12345`'. Defaults to '`confirmed`'.
-        
+
         Returns:
             A layer 2 block, with a list of transactions (txs) belonging to it.
-        
+
         Raises:
             InvalidBlock: The block you're looking for doesn't exist.
             UnknownError: Something out of your control went wrong.
-        
+
         """
 
         url = self.endpoint + PATH.BLOCK_INFO
@@ -739,7 +739,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             block = Block(**content)
 
             return block
@@ -773,7 +773,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             exchange = Exchange(**content)
 
             self.exchange = exchange
@@ -785,7 +785,7 @@ class Client:
                 )
 
                 self.__exchange_domain_initialised = False
-            
+
             logging.debug("Finished initialising exchange config...")
 
             return exchange
@@ -799,7 +799,7 @@ class Client:
 
         Args:
             currency: Defaults to "`USD`".
-        
+
         Returns:
             All prices of supported tokens, in the given ``currency``.
 
@@ -821,12 +821,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             prices = []
 
             for p in content["prices"]:
                 prices.append(Price(currency=currency, **p))
-            
+
             return prices
 
     async def get_market_candlesticks(self,
@@ -853,7 +853,7 @@ class Client:
             end: The latest time of which a candlestick could indicate.
             limit: Number of candlesticks returned - if more are available, only
                 the first, `limit` number data points will be returned.
-        
+
         Returns:
             A list of candlestick objects, capped at `limit` sticks, between `start`
             and `end`.
@@ -883,7 +883,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             candlesticks = []
 
             for c in content["candlesticks"]:
@@ -893,13 +893,13 @@ class Client:
 
     async def get_market_configurations(self) -> List[Market]:
         """Get all markets (trading pairs) on the exchange, both valid and invalid.
-        
+
         Note:
             This is called during your client's initialisation.
 
         Returns:
             All markets listed on the exchange.
-        
+
         Raises:
             UnknownError: Something out of your control went wrong.
 
@@ -916,7 +916,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             markets = []
 
             for m in content["markets"]:
@@ -926,7 +926,7 @@ class Client:
                 self.markets[market.market] = market
 
             logging.debug("Finished initialising market config...")
-            
+
             return markets
 
     async def get_market_orderbook(self,
@@ -944,7 +944,7 @@ class Client:
                 receive.  Defaults to '`LRC-ETH`'.
             depth: The order book's aggregation level - the larger, the larger the \
                 depth will be.  Defaults to ``2``.
-        
+
         Returns:
             An orderbook containing bids and asks.
 
@@ -970,7 +970,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             orderbook = OrderBook(**content)
 
             return orderbook
@@ -1016,7 +1016,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             tickers = []
 
             for t in content["tickers"]:
@@ -1058,7 +1058,7 @@ class Client:
                 '`CANCELLING, CANCELLED`'
             trade_channels: The channel which said trade was made in: '`ORDER_BOOK`', \
                 '`AMM_POOL`', '`MIXED`'.
-        
+
         Returns:
             A list of orders on a successful query. The returned list could be empty
             if no orders met the given conditions.
@@ -1119,7 +1119,7 @@ class Client:
         When making any offchain or order request for the first time each session,
         it's important to call this method to update the cached storage ID
         information.
-        
+
         Once you've queried the storage ID for a token, you won't need
         to worry about making another query for the same token during the program's
         lifetime.  There is an exception to this - for longer running programs that
@@ -1138,7 +1138,7 @@ class Client:
 
                 # Fetch all storage IDs concurrently
                 storage_ids = await asyncio.gather(*[client.get_next_storage_id(token=t) for t in tokens])
-        
+
                 lrc_storage, eth_storage, link_storage = storage_ids
 
             It's important to not do this with too many symbols at once, as you
@@ -1183,7 +1183,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             self.storage_ids[int(token)] = content
 
             return content
@@ -1201,7 +1201,7 @@ class Client:
             withdrawal_types: str=None
         ) -> List[WithdrawalHashData]:
         """Get a user's onchain withdrawal history.
-        
+
         Args:
             account_id: The account ID of the user whose withdrawal history you want
                 to query.  Leave this argument blank to default to your own
@@ -1265,21 +1265,21 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             withdrawals = []
 
             for w in content["transactions"]:
                 withdrawals.append(WithdrawalHashData(**w))
-            
+
             return withdrawals
 
     async def get_order_details(self, orderhash: str) -> Order:
         """Get the details of an order from an order hash.
-        
+
         Args:
             orderhash: The orderhash belonging to the order you want to
                 find details of.
-        
+
         Returns:
             An instance of the order containing all available details related to it.
 
@@ -1331,7 +1331,7 @@ class Client:
             status: str=None
         ) -> List[TransactionHashData]:
         """Get a user's ETH transactions from password resets on the exchange.
-        
+
         Args:
             account_id: The account ID belonging to the user whose password
                 transactions you wish to retrieve.  Leave blank to default to your
@@ -1344,10 +1344,10 @@ class Client:
             status: Filter results based on their current status.  Currently
                 accepted values are currently: '`processing`', '`processed`',
                 '`received`', '`failed`'.
-        
+
         Returns:
             A list of all transactions initiated via password resets on the exchange.
-        
+
         Raises:
             EmptyAPIKey: No API Key was supplied.
             EmptyUser: No account ID was supplied.
@@ -1379,17 +1379,17 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             tx_list = []
 
             for t in content["transactions"]:
                 tx_list.append(TransactionHashData(**t))
-            
+
             return tx_list
 
     async def get_pending_block_transactions(self) -> List[TxModel]:
         """Get pending txs to be packed into the next block.
-        
+
         Returns:
             A list of all pending transactions to be packed into the next block.
 
@@ -1411,7 +1411,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             transactions = []
 
             for tx in content:
@@ -1437,7 +1437,7 @@ class Client:
 
         Returns:
             A list of trades recently made on a specific market.
-        
+
         Raises:
             UnknownError: Something out of your control went wrong.
 
@@ -1457,12 +1457,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             trades = []
 
             for t in content["trades"]:
                 trades.append(Trade(*t))
-            
+
             return trades
 
     # TODO: deal with timezone differences
@@ -1476,7 +1476,7 @@ class Client:
         TODO: Let the client handle timezones
 
         Examples:
-            
+
             .. code-block:: python3
 
                 # Get all orders from 2 weeks ago
@@ -1513,10 +1513,10 @@ class Client:
 
     async def get_token_configurations(self) -> List[TokenConfig]:
         """Return the configs of all supporoted tokens (Ether included).
-        
+
         Returns:
             List[:obj:`~loopring.token.TokenConfig`]: Token configs.
-        
+
         Raises:
             UnknownError: Something out of your control went wrong.
 
@@ -1552,7 +1552,7 @@ class Client:
             self.tokens.set_symbol_map(token_id_symbol_map)
 
             logging.debug("Finished initialising token config...")
-            
+
             return token_confs
 
     async def get_user_amm_join_exit_history(self,
@@ -1591,7 +1591,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             transactions = []
 
             for t in content["transactions"]:
@@ -1611,7 +1611,7 @@ class Client:
             token_symbol: str=None
         ) -> List[DepositHashData]:
         """Get a user's deposit records.
-        
+
         Args:
             account_id (int): ... .
             end (Union[int, :class:`~datetime.datetime`]): ... .
@@ -1665,7 +1665,7 @@ class Client:
 
             for d in content["transactions"]:
                 deposits.append(DepositHashData(**d))
-            
+
             return deposits
 
     async def get_user_exchange_balances(self,
@@ -1735,12 +1735,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             balances = []
 
             for b in content:
                 balances.append(Balance(**b))
-            
+
             return balances
 
     async def get_user_registration_transactions(self,
@@ -1752,7 +1752,7 @@ class Client:
         start: Union[int, datetime]=None,
         status: str=None) -> List[TransactionHashData]:
         """Return all ethereum transactions from a user upon account registration.
-        
+
         Args:
             account_id (int): Leave blank to receive your client config account's
                 transactions.
@@ -1761,10 +1761,10 @@ class Client:
             offset (int): ... .
             start (Union[int, :class:`~datetime.datetime`): ... .
             status (str): ... .
-        
+
         Returns:
             List[:obj:`~loopring.exchange.TransactionHashData`]: ... .
-        
+
         Raises:
             EmptyAPIKey: ... .
             EmptyUser: ... .
@@ -1794,7 +1794,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             tx_list = []
 
             for tx in content["transactions"]:
@@ -1812,7 +1812,7 @@ class Client:
         offset: int=None,
         order_hash: str=None) -> List[Trade]:
         """Get a user's trade history.
-        
+
         Args:
             account_id (int): ... .
             fill_types (str): Supports '`dex`' and '`amm`'.
@@ -1846,12 +1846,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             trades = []
 
             for t in content["trades"]:
                 trades.append(Trade(*t))
-            
+
             return trades
 
     async def get_user_transfer_history(self,
@@ -1891,12 +1891,12 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             transfers = []
 
             for t in content["transactions"]:
                 transfers.append(TransferHashData(**t))
-            
+
             return transfers
 
     async def __init_local_storage(self) -> None:
@@ -1930,12 +1930,12 @@ class Client:
             Unless you know what you're doing, don't attempt to use this
             method until it's thoroughly documented with examples and 
             explanations.
-        
+
         """
 
         if valid_until is None:
             valid_until = int(time.time()) + 60 * 60 * 24 * 60
-        
+
         assert len(join_tokens.pooled) == 2
 
         storage_ids = [
@@ -1978,7 +1978,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             transfer = Transfer(**content)
 
             return transfer
@@ -2027,7 +2027,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             fees = []
 
             for f in content["fees"]:
@@ -2040,11 +2040,11 @@ class Client:
         account_id: int=None,
         market: str="LRC-ETH") -> Tuple[str, datetime, List[RateInfo]]:
         """Get the current trading pair (market)'s  fees.
-        
+
         Args:
-            account_id: 
+            account_id:
             market: The trading pair, or market, to receive fees information about.
-        
+
         Returns:
             Tuple[str, :class:`~datetime.datetime`, List[:obj:`~loopring.token.RateInfo`]]: ...
 
@@ -2070,9 +2070,9 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             rates = []
-            
+
             for a in content["amounts"]:
                 rates.append(RateInfo(**a))
 
@@ -2124,7 +2124,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             rate_content: dict = content.pop("feeRate")
             rate_content.update(content)
 
@@ -2183,7 +2183,7 @@ class Client:
             UnsupportedFeeToken: ... .
 
         """
-        
+
         storage_id = self.storage_ids[token.id]["offchainId"]
         self.storage_ids[token.id]["offchainId"] += 2
 
@@ -2245,7 +2245,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             return Transfer(**content)
 
     async def submit_offchain_withdrawal_request(self,
@@ -2269,7 +2269,7 @@ class Client:
             Unless you know what you're doing, don't attempt to use this
             method until it's thoroughly documented with examples and 
             explanations.
-        
+
         """
 
         if not valid_until:
@@ -2340,7 +2340,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             withdrawal = PartialOrder(**content)
 
             return withdrawal
@@ -2376,7 +2376,7 @@ class Client:
 
         Note:
             Loopring's API doesn't natively support market price orders.
-            
+
             See :meth:`~loopring.client.Client.get_next_storage_id()` for more
             information on storage IDs.
 
@@ -2555,7 +2555,7 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             order: PartialOrder = PartialOrder(**content)
 
             return order
@@ -2574,7 +2574,7 @@ class Client:
             Unless you know what you're doing, don't attempt to use this
             method until it's thoroughly documented with examples and 
             explanations.
-        
+
         """
 
         url = self.endpoint + PATH.ACCOUNT
@@ -2624,16 +2624,16 @@ class Client:
 
             if self.handle_errors:
                 raise_errors_in(content)
-            
+
             return content
 
     # TODO: rename to `regenerate_api_key()`?
     async def update_api_key(self) -> str:
         """Update the account's API Key.
-        
+
         Returns:
             str: Your account's new API Key.
-        
+
         Raises:
             EmptyAPIKey: ...
             EmptySignature: ...

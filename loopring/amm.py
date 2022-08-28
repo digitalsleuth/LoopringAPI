@@ -25,7 +25,7 @@ class AMMTrade:
                 setattr(self, to_snake_case(k), dt)
             else:
                 setattr(self,  to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -41,7 +41,7 @@ class AMMToken:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-        
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -75,7 +75,7 @@ class AMMTransaction:
                 setattr(self, to_snake_case(k), tokens)
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -89,7 +89,7 @@ class PoolPrecisions:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -103,10 +103,10 @@ class ExitPoolTokens:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     @classmethod
     def from_tokens(cls, t1: Token, t2: Token, burned: Token):
         """Describe the tokens to be removed from an AMM Pool. Order matters!"""
@@ -130,18 +130,18 @@ class JoinPoolTokens:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     @classmethod
     def from_tokens(cls, *, t1: Token, t2: Token, minimum_lp: Token):
         """Used to help define AMM pool join parameters.
-        
+
         Warning:
             Order matters here. You'll be joining the AMM Pool like so; \
                 `AMM-t1-t2`
-        
+
         Examples:
             >>> eth = Token(id=0, volume=1000000000)
 
@@ -176,10 +176,10 @@ class Pool:
                 setattr(self, to_snake_case(k), JoinPoolTokens(**data[k]))
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.address
 
@@ -204,14 +204,14 @@ class PoolSnapshot:
                 for t in data[k]:
                     t["id"] = t.pop("tokenId")
                     tokens.append(Token(**t))
-                
+
                 setattr(self, to_snake_case(k), tokens)
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.pool_address
 

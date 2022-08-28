@@ -28,7 +28,7 @@ def auto_repr(obj: object):
 
 def clean_params(params: dict) -> dict:
     """Clean all NoneType parameters from a given dict.
-    
+
     The API doesn't always require all the possible parameters to be passed
     to it when making a request, so this helper function should help to
     remove any paramaters that won't be needed.
@@ -49,7 +49,7 @@ def clean_params(params: dict) -> dict:
 
 def fetch(seq: Iterable, **attrs) -> object:
     """A helper for fetching an object from an iterable.
-    
+
     Only the first instance will be returned where all ``attrs`` match.
 
     Args:
@@ -59,7 +59,7 @@ def fetch(seq: Iterable, **attrs) -> object:
 
     if isinstance(seq, dict):
         seq = seq.values()
-    
+
     for obj in seq:
         if all(getattr(obj, attr) == attrs[attr] for attr in attrs):
             return obj
@@ -67,7 +67,7 @@ def fetch(seq: Iterable, **attrs) -> object:
 
 def raise_errors_in(content: dict) -> None:
     """Raise the appropriate error from an API response.
-    
+
     Exceptions are accessed from a mapping, using the corresponding
     enum, and passing the error message from the `content` to the
     error itself.
@@ -105,7 +105,7 @@ def raise_errors_in(content: dict) -> None:
 
 def ratelimit(rate: int, per: int) -> Callable:
     """A ratelimit decorator for an asynchronous function.
-    
+
     Leaky bucket algorithm.
 
     Warning:
@@ -119,7 +119,7 @@ def ratelimit(rate: int, per: int) -> Callable:
 
     async def wrapper(*args, **kwargs):
         limit: AsyncLimiter = AsyncLimiter(rate, per)
-        
+
     return wrapper
 
 
@@ -129,16 +129,16 @@ def to_snake_case(camel: str) -> str:
     This is primarily used in conjunction with :py:func:`setattr()`
     when dynamically instantiating classes when interacting with the
     API.
-    
+
     Examples:
         >>> c = "myStringContents"
         >>> s = to_snake_case(c)
         >>> s
         'my_string_contents'
-    
+
     Args:
         camel (str): The target camelCase string to turn into snake_case.
-    
+
     Returns:
         str: The snake_case equivalent of the `camel` input.
 
@@ -155,7 +155,7 @@ def to_snake_case(camel: str) -> str:
             snake += f"_{_.lower()}"
             continue
         snake += _
-    
+
     return snake
 
 
@@ -165,7 +165,7 @@ def validate_timestamp(
         validate_future: bool=False
     ) -> int:
     """Validate whether the given time will be suitable for the API.
-    
+
     The API seems to like taking timestamps in both ms and seconds format, which
     requires a length of 13 and 10 respectively. A datetime object's timestamp can
     be multiplied by 1000, but if a user wishes to pass an int, it has to be the 
@@ -176,7 +176,7 @@ def validate_timestamp(
         timestamp (Union[int, :obj:`~datetime.datetime`]): The `int` or
             :obj:`datetime.datetime` object to be validated.
         unit (str): Whether to validate the timestamp as seconds or 'ms'.
-    
+
     Returns:
         int: A 13 digit or 10 digit timestamp.
 
@@ -198,7 +198,7 @@ def validate_timestamp(
             raise ValidationException("Please enter a future time.")
 
         return ts
-    
+
     if isinstance(timestamp, int):
         exp_len = 13 if unit == "ms" else 10
 
@@ -208,13 +208,13 @@ def validate_timestamp(
                 f"`{exp_len}`). Try using a datetime object, or refer to the " + \
                 "documentation."
             )
-        
+
         # Check the timestamp is in the future
         if validate_future and timestamp < int(time.time()) * multiplier:
             raise ValidationException("Please enter a future timestamp.")
 
         return timestamp
-    
+
     if timestamp:
         raise TypeError(
             f"Invalid type. Expected 'int' or 'datetime.datetime', got '{type(timestamp)}'."

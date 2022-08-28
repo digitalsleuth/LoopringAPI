@@ -21,10 +21,10 @@ class Account:
                     setattr(self, f"public{pk.upper()}", data[k][pk])
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.owner
 
@@ -40,7 +40,7 @@ class _PendingBalance:
 
     def __repr__(self) -> str:
         return f"<deposit={self.deposit} withdraw={self.withdraw}>"
-    
+
     def __str__(self) -> str:
         return f"Deposit: {self.deposit}, Withdraw: {self.withdraw}"
 
@@ -59,9 +59,9 @@ class Balance:
                 self.pending = _PendingBalance(**data[k])
             else:
                 setattr(self, to_snake_case(k), int(data[k]))
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.total

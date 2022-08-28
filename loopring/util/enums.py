@@ -79,6 +79,7 @@ class ErrorCodes(IntEnum):
     ORDERBOOK_UNSUPPORTED_MARKET = 108000  # Duplicate: (Order submission `102005`)
     UNSUPPORTED_DEPTH_LEVEL = 108001
     UNSUPPORTED_FEE_TOKEN = 102024
+    UNSUPPORTED_MARKET = 108000  # Duplicate: (Orderbook Unsupported Market)
 
     # Account interactions
     EMPTY_API_KEY = 104001
@@ -86,12 +87,14 @@ class ErrorCodes(IntEnum):
     INVALID_API_KEY = 104002
     INVALID_SIG = 104005
 
+    # NFT Specific Errors
+    UNDEFINED_NFT_ERROR = 108003
+
     # ! Not yet implemented !
     IMPL_CONTRACT_NFT_URI = 500001
     """
     .. warning:: This error code has yet to be implemented (or at least \
                 isn't referenced in the official API docs).
-    
     """
 
     # Possibly deprecated, but in documentation
@@ -122,6 +125,18 @@ class Paths(str, Enum):
     DEPTH = "/api/v3/depth"
     EXCHANGES = "/api/v3/exchange/info"
     MARKETS = "/api/v3/exchange/markets"
+    MIX_CANDLESTICK = "/api/v3/mix/candlestick"
+    MIX_DEPTH = "/api/v3/mix/depth"
+    MIX_MARKETS = "/api/v3/mix/markets"
+    MIX_TICKER = "/api/v3/mix/ticker"
+    NFT_INFO_DATA = "/api/v3/nft/info/nftData"
+    NFT_INFO_HOLDERS = "/api/v3/nft/info/nftHolders"
+    NFT_INFO_NFTS = "/api/v3/nft/info/nfts"
+    NFT_MINT = "/api/v3/nft/mint"
+    NFT_TRADE = "/api/v3/nft/trade"
+    NFT_TRANSFER = "/api/v3/nft/transfer"
+    NFT_VALIDATE_ORDER = "/api/v3/nft/validateOrder"
+    NFT_WITHDRAWAL = "/api/v3/nft/withdrawal"
     ORDER = "/api/v3/order"
     ORDERS = "/api/v3/orders"
     PRICE = "/api/v3/price"
@@ -134,11 +149,20 @@ class Paths(str, Enum):
     TRANSFER = "/api/v3/transfer"
     USER_BALANCES = "/api/v3/user/balances"
     USER_DEPOSITS = "/api/v3/user/deposits"
+    USER_NFT_BALANCES = "/api/v3/user/nft/balances"
+    USER_NFT_DEPOSITS = "/api/v3/user/nft/deposits"
+    USER_NFT_MINTS = "/api/v3/user/nft/mints"
+    USER_NFT_ORDER_FEE = "/api/v3/user/nft/orderFee"
+    USER_NFT_REQUESTS_FEE = "/api/v3/user/nft/offchainFee"
+    USER_NFT_TRADES = "/api/v3/user/nft/trades"
+    USER_NFT_TRANSFERS = "/api/v3/user/nft/tranfers"
+    USER_NFT_WITHDRAWALS = "/api/v3/user/nft/withdrawals"
     USER_OFFCHAIN_FEE = "/api/v3/user/offchainFee"
     USER_ORDER_FEE = "/api/v3/user/orderFee"
     USER_ORDER_RATES = "/api/v3/user/orderUserRateAmount"
     USER_PASSWORD_RESETS = "/api/v3/user/updateInfo"
     USER_REGISTRATION = "/api/v3/user/createInfo"
+    USER_TRADES = "/api/v3/user/trades"
     USER_TRANSFERS = "/api/v3/user/transfers"
     USER_WITHDRAWALS = "/api/v3/user/withdrawals"
 

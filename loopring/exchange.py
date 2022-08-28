@@ -85,7 +85,7 @@ class TxModel:
 
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -107,9 +107,9 @@ class Block:
 
                 for t in data[k]:
                     transactions.append(TxModel(**t))
-                
+
                 setattr(self, to_snake_case(k), transactions)
-            
+
             elif k == "createdAt":
                 ts = datetime.fromtimestamp(data[k] / 1000)
 
@@ -117,7 +117,7 @@ class Block:
 
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         attrs = []
 
@@ -129,7 +129,7 @@ class Block:
                 attrs.append(f"{a}=[{n} Transaction{'s' if n != 1 else ''}]")
 
         return f"<{' '.join(attrs)}>"
-    
+
     def __str__(self) -> str:
         return f"{self.block_id}"
 
@@ -142,10 +142,10 @@ class FeeInfo:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-        
+
     def __repr__(self) -> str:
         return f"<type='{self.type}' fee='{self.fee}'>"
-    
+
     def __str__(self) -> str:
         return f"{self.type} {self.fee}"
 
@@ -158,16 +158,16 @@ class OffFeeInfo:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return f"<fee='{self.fee}' token='{self.token}'>"
-    
+
     def __str__(self) -> str:
         return f"{self.fee} {self.token}"
 
 
 class Exchange:
-    
+
     amm_exit_fees: List[OffFeeInfo]
     chain_id: int
     deposit_address: str
@@ -188,19 +188,19 @@ class Exchange:
 
                     for f in data[k]:
                         fees.append(FeeInfo(**f))
-                
+
                 else:
                     for f in data[k]:
                         fees.append(OffFeeInfo(**f))
 
                 setattr(self, to_snake_case(k), fees)
-            
+
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.exchange_address
 
@@ -225,10 +225,10 @@ class _BaseTransaction:
                 continue
 
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.tx_hash
 
@@ -243,13 +243,13 @@ class DepositHashData(_BaseTransaction):
 
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
 
 class TransactionHashData(_BaseTransaction):
-    
+
     fee_amount: int
     fee_token_symbol: str
     owner: str
@@ -258,7 +258,7 @@ class TransactionHashData(_BaseTransaction):
         self.__annotations__.update(super().__annotations__)
 
         super().__init__(**data)
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -277,10 +277,10 @@ class TransferHashData(DepositHashData):
         self.__annotations__.update(super().__annotations__)
 
         super().__init__(**data)
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.hash
 

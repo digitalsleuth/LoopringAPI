@@ -15,13 +15,13 @@ class Fee:
     def __init__(self, **data) -> None:
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __int__(self) -> int:
         return self.fee
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return f"{self.fee}"
 
@@ -37,7 +37,7 @@ class Rate:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -51,7 +51,7 @@ class GasAmount:
     Args:
         deposit (str): The gas amount for deposit.
         distribution (str): The gas amount for distribution.
-    
+
     """
 
     deposit: str
@@ -60,7 +60,7 @@ class GasAmount:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -68,12 +68,12 @@ class GasAmount:
 class OrderAmount:
     """Contains information about the order amounts that are valid for usage \
         with the token in order-related APIs.
-    
+
     Args:
         dust (str): The dust amount enforced when submitting orders for the token.
         maximum (str): The max amount enforced when submitting orders for the token.
         minimum (str): The min amount enforced when submitting orders for the token.
-    
+
     """
 
     dust: str
@@ -83,7 +83,7 @@ class OrderAmount:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -98,7 +98,7 @@ class OrderInfo:
     def __init__(self,  **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -120,7 +120,7 @@ class RateInfo:
                 setattr(self, to_snake_case(k), OrderInfo(**data[k]))
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
 
@@ -132,7 +132,7 @@ class Price:
         You may want to refer to the :attr:`~loopring.token.Price.updated_at` \
         attribute, as the price may be delayed and not reflect the current live \
         price.
-    
+
     Attributes:
         currency (str): ... .
         price (str): ... .
@@ -159,10 +159,10 @@ class Price:
                 continue
 
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         currency_map = Mappings.CURRENCY_MAPPINGS
         return f"1 {self.symbol} = {currency_map[self.currency.upper()]}" + \
@@ -171,7 +171,7 @@ class Price:
 
 class TokenConfig:
     """Token configuration model class.
-    
+
     Attributes:
         address (str): ...
         decimals (int): ...
@@ -214,20 +214,20 @@ class TokenConfig:
 
             else:
                 setattr(self, to_snake_case(k), data[k])
-    
+
     def __int__(self) -> int:
         return self.token_id
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.symbol
 
 
 class Token:
     """Token class.
-    
+
     Args:
         id (int): ...
         volume (str): ...
@@ -243,23 +243,22 @@ class Token:
     def __init__(self, *, id: int=None, volume: str=None):
         self.id = id
         self.volume = volume
-    
+
     def __int__(self) -> int:
         return self.id
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     @classmethod
     def from_quantity(cls, quantity: float, cfg: TokenConfig) -> "Token":
 
         # Bug squashed by Blaine Costello: https://github.com/blainecostello
         vol = int(quantity * 10 ** cfg.decimals)
-        
+
         return cls(id=cfg.token_id, volume=vol)
 
     def to_params(self):
         """Converting any attributes back to the fields required for requests."""
 
         return {"tokenId": self.__dict__["id"], "volume": self.__dict__["volume"]}
-

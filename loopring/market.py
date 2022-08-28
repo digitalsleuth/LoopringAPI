@@ -15,10 +15,10 @@ class Market:
     def __init__(self, **data):
         for k in data.keys():
             setattr(self, to_snake_case(k), data[k])
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return self.market
 
@@ -75,7 +75,7 @@ class Ticker:
         # added it as a precaution for the other attrs too
         self.base_fee_amount    = base_fee_amount or "N/A"
         self.quote_fee_amount   = quote_fee_amount or "N/A"
-    
+
     def __repr__(self) -> str:
         amm_fees = ""
         if self.base_fee_amount:
@@ -88,7 +88,7 @@ class Ticker:
             f"opening_price='{self.opening_price}' timestamp='{self.timestamp}' " + \
             f"base_token_volume={self.base_token_volume} " + \
             f"quote_token_volume={self.quote_token_volume}{amm_fees}>"
-    
+
     def __str__(self) -> str:
         return f"({self.market}) High: {self.highest_price}, Low: {self.lowest_price}"
 
@@ -133,7 +133,7 @@ class Trade:
             f"price='{self.price}' trade_time={self.trade_time} " + \
             f"volume='{self.volume}' record_id='{self.record_id}' " + \
             f"fees='{self.fees}'{block_info}>"
-    
+
     def __str__(self) -> str:
         # Add volume
         return f"{self.action.title()} {self.market} @ {self.price} @ {self.trade_time}"  
@@ -142,7 +142,7 @@ class Trade:
 class Candlestick:
 
     """A candlestick model class.
-    
+
     Attributes:
         base_transaction_volume (int): ...
         closing_price (str): ...
@@ -181,10 +181,10 @@ class Candlestick:
         self.opening_price = opening_price
         self.quote_transaction_volume = int(quote_transaction_volume)
         self.start_time = datetime.fromtimestamp(int(start_time) / 1000)
-    
+
     def __repr__(self) -> str:
         return auto_repr(self)
-    
+
     def __str__(self) -> str:
         return f"High: {self.highest_price} Low: {self.lowest_price} " + \
             f"Open: {self.opening_price} Close: {self.closing_price}"

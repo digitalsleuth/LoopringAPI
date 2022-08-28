@@ -6,7 +6,7 @@ from .enums import ErrorCodes as ERR
 class Mappings:
 
     """A class containing some useful dictionaries.
-    
+
     These shouldn't be any real reason to be using this, unless
     you've disabled :obj:`~loopring.client.Client.handle_errors` \ 
     and know what you're doing.
@@ -19,7 +19,8 @@ class Mappings:
         "GBP": "£",
         "HKD": "HK$",
         "JPY": "¥",
-        "USD": "$"
+        "USD": "$",
+        "CAD": "$"
     }
 
     ERROR_MAPPINGS = {
@@ -67,7 +68,8 @@ class Mappings:
         ERR.UNSUPPORTED_DEPTH_LEVEL: UnsupportedDepthLevel,
         ERR.UNSUPPORTED_FEE_TOKEN: UnsupportedFeeToken,
         ERR.UNSUPPORTED_TOKEN_ID: UnsupportedTokenID,
-        ERR.USER_NOT_FOUND: UserNotFound
+        ERR.USER_NOT_FOUND: UserNotFound,
+        ERR.UNDEFINED_NFT_ERROR: UndefinedNftError
     }
-    """dict[:class:`~loopring.util.enums.ErrorCodes`, \ 
+    """dict[:class:`~loopring.util.enums.ErrorCodes`, \
     :exc:`~loopring.errors.LoopringError`]"""

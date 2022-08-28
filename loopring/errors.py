@@ -287,8 +287,16 @@ class OrderUnsupportedMarket(LoopringError):
         super().__init__(message)
 
 
+class UndefinedNftError(LoopringError):
+
+    def __init__(self, message: str=None):
+        if not message:
+            message = "Undefined NFT Error."
+        super().__init__(message)
+
+
 class UnknownError(LoopringError):
-    
+
     def __init__(self, message: str=None):
         if not message:
             message = "An unknown error occured."
